@@ -3,7 +3,7 @@ applications:
 
   - name: pal-tracker
     path: build/libs/pal-tracker.jar
-    routes
+    routes:
     -route: pal-tracker-gauravraksha.cfapps.io
     env:
      WELCOME_MESSAGE: Hello from the review environment
