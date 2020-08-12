@@ -25,28 +25,34 @@ public class TimeEntryController {
     @PostMapping
     public ResponseEntity create(@RequestBody TimeEntry timeEntryToCreate) {
         TimeEntry timeEntry = timeEntryRepository.create(timeEntryToCreate);
+        actionCounter.increment();
+        timeEntrySummary.record(timeEntryRepository.list().size());
         return new ResponseEntity(timeEntry, HttpStatus.CREATED);
     }
     @GetMapping("/{timeEntryId}")
     public ResponseEntity<TimeEntry> read(@PathVariable long timeEntryId) {
         TimeEntry timeEntry = timeEntryRepository.find(timeEntryId);
-        if(timeEntry!=null)
+        if(timeEntry!=null) {
+            actionCounter.increment();
             return new ResponseEntity<>(timeEntry, HttpStatus.OK);
+        }
         else
             return new ResponseEntity<>(timeEntry, HttpStatus.NOT_FOUND); //todo
     }
     @GetMapping
     public ResponseEntity<List<TimeEntry>> list() {
         List<TimeEntry> listObj = timeEntryRepository.list();
-
+        actionCounter.increment();
         return new ResponseEntity<>(listObj, HttpStatus.OK);
     }
 
     @PutMapping("/{timeEntryId}")
     public ResponseEntity update(@PathVariable long timeEntryId,@RequestBody TimeEntry expected) {
         TimeEntry update = timeEntryRepository.update(timeEntryId, expected);
-        if(update!= null)
-        return    new ResponseEntity<>(update, HttpStatus.OK);
+        if(update!= null) {
+            actionCounter.increment();
+            return new ResponseEntity<>(update, HttpStatus.OK);
+        }
         else
            return new ResponseEntity<>(update, HttpStatus.NOT_FOUND); //todo
     }
@@ -54,6 +60,8 @@ public class TimeEntryController {
     @DeleteMapping("/{timeEntryId}")
     public ResponseEntity delete(@PathVariable long timeEntryId) {
         timeEntryRepository.delete(timeEntryId);
+        actionCounter.increment();
+        timeEntrySummary.record(timeEntryRepository.list().size());
 
         return new ResponseEntity(null,HttpStatus.NO_CONTENT);
     }
